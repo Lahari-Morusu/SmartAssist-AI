@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 import streamlit as st
 
@@ -130,6 +131,8 @@ if not tasks:
 else:
     for task_id, task_text, due_at, reminder_contact, reminder_type, reminder_sent in tasks:
         now = datetime.now()
+        due_dt: Optional[datetime]
+
         try:
             due_dt = datetime.strptime(due_at, "%Y-%m-%d %H:%M")
         except (ValueError, TypeError):
@@ -144,7 +147,7 @@ else:
             status = "Scheduled"
 
         if due_dt and due_dt <= now and not reminder_sent:
-            reminder_result = send_reminder(task_text, due_at, reminder_contact, reminder_type)
+            reminder_result = send_reminder(task_text, due_at, reminder_contact)
             if reminder_result.get("sent"):
                 cursor.execute("UPDATE tasks SET reminder_sent = 1 WHERE id = ?", (task_id,))
                 conn.commit()
@@ -152,7 +155,10 @@ else:
             else:
                 cursor.execute("UPDATE tasks SET reminder_sent = 1 WHERE id = ?", (task_id,))
                 conn.commit()
-                st.info(f"Reminder queued for {reminder_contact}")
+                st.info(
+                    f"Reminder queued for {reminder_contact} "
+                    "because sending failed."
+            )
 
         st.markdown(
             f"""
@@ -169,7 +175,7 @@ else:
             unsafe_allow_html=True,
         )
 
-        col1, col2 = st.columns([6, 1])
+        _, col2 = st.columns([6, 1])
         with col2:
             if st.button("Remove", key=f"delete-{task_id}"):
                 cursor.execute("DELETE FROM tasks WHERE id=?", (task_id,))

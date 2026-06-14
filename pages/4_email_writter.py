@@ -34,3 +34,4 @@ if st.button("Generate Email"):
             email,
             height=300
         )
+        

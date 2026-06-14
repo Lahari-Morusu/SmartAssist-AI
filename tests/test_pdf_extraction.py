@@ -1,7 +1,6 @@
 import unittest
-from io import BytesIO
 
-import fitz
+import fitz  # type: ignore
 
 from services.ai_service import extract_text_from_pdf
 

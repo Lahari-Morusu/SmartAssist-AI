@@ -1,19 +1,26 @@
 import io
 import re
+from typing import Any
+
 import requests
+
+pdfplumber: Any = None
 
 try:
     import pdfplumber
-except ImportError:  # pragma: no cover - optional dependency
-    pdfplumber = None
+except ImportError:
+    pass
+
+PdfReader: Any = None
 
 try:
-    from pypdf import PdfReader
+    from pypdf import PdfReader as _PdfReader
+    PdfReader = _PdfReader
 except ImportError:  # pragma: no cover - optional dependency
-    PdfReader = None
+    pass
 
 try:
-    import fitz
+    import fitz  # type: ignore
 except ImportError:  # pragma: no cover - optional dependency
     fitz = None
 
@@ -107,8 +114,8 @@ def extract_text_from_pdf(pdf_source):
                         extracted_pages.append(page_text)
                 if extracted_pages:
                     return "\n\n".join(extracted_pages)
-        except Exception:
-            pass
+        except Exception as e:
+            print("PDFPLUMBER ERROR:", e)
 
     if PdfReader is not None:
         try:
@@ -120,8 +127,8 @@ def extract_text_from_pdf(pdf_source):
                     extracted_pages.append(page_text)
             if extracted_pages:
                 return "\n\n".join(extracted_pages)
-        except Exception:
-            pass
+        except Exception as e:
+            print("PDFREADER ERROR:", e)
 
     if fitz is not None:
         try:
@@ -299,8 +306,6 @@ def _basic_translation_fallback(text, source_language, target_language):
     translated_text = " ".join(translated_words)
     return translated_text.strip() or f"Translation unavailable for {source_language} to {target_language}."
 
-
-import requests
 
 # =========================
 # MAIN TRANSLATION FUNCTION

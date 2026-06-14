@@ -2,7 +2,7 @@ import streamlit as st
 
 from PIL import Image
 
-import pytesseract
+import pytesseract  # type: ignore
 
 from services.ai_service import summarize_text
 
@@ -32,3 +32,4 @@ if image_file:
 
             st.subheader("Summary")
             st.write(summary)
+            

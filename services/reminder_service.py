@@ -1,7 +1,6 @@
 import os
 import smtplib
 from email.message import EmailMessage
-from datetime import datetime
 
 
 # =========================
@@ -59,3 +58,4 @@ def send_email_reminder(task, due_at, contact):
 # =========================
 def send_reminder(task, due_at, contact):
     return send_email_reminder(task, due_at, contact)
+    

@@ -36,3 +36,4 @@ if st.button("Translate"):
 
         st.subheader("Translated Text")
         st.success(result)
+        
